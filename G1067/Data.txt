@@ -1,0 +1,6 @@
+13000, 1067, Popescu Maria
+5000, 1069, Ionescu Andrei
+17000, 1070, Georgescu Ana
+20000, 1070, Popescu Ion
+40000, 1069, Ionescu Elena
+3500, 1071, Vasilescu Mihai
