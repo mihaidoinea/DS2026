@@ -12,6 +12,8 @@ typedef struct Student
 //typedef struct Student Student;
 //typedef struct Student* PStudent;
 #define LINE_SIZE 256
+void printStudent(Student* pStud);
+PStudent createStudent(unsigned int, unsigned short,const char*);
 
 int main()
 {
@@ -21,8 +23,8 @@ int main()
 	if (pFile != NULL)
 	{
 		char line[LINE_SIZE];
-		char* delimiter = ",";
-		//char delimiter[] = { ',','\0' };
+		//char* delimiter = ",";
+		char delimiter[] = { ',','\0' };
 		char* token = NULL;
 		char* context = NULL;
 		unsigned int regNo;
@@ -39,8 +41,44 @@ int main()
 
 			token = strtok_s(NULL, delimiter, &context);
 			//printf("Remaining line: %s\n", context);
+			Student* pStud = createStudent(regNo, groupNo, token);
+			printStudent(pStud);
 		}
 	}
 	
 	return 0;
+}
+
+void printStudent(Student* pStud)
+{
+	if (pStud != NULL)
+	{
+		printf("Name: %s, regNo: %d, groupNo: %d\n",
+			pStud->name,
+			pStud->regNo,
+			pStud->group);
+	}
+}
+
+PStudent createStudent(unsigned int regNo, 
+	unsigned short groupNo, 
+	const char* name)
+{
+	Student* stud = (Student*)malloc(sizeof(Student));
+	if (stud != NULL)
+	{
+		stud->regNo = regNo;
+		stud->group = groupNo;
+		stud->name = (char*)malloc(strlen(name)+1);
+		if (stud->name != NULL)
+		{
+			strcpy_s(stud->name, strlen(name)+1, name);
+		}
+		else
+		{
+			free(stud);
+			stud = NULL;
+		}
+	}
+	return stud;
 }
