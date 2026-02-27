@@ -12,8 +12,9 @@ typedef struct Student
 //typedef struct Student Student;
 //typedef struct Student* PStudent;
 #define LINE_SIZE 256
-void printStudent(Student* pStud);
+
 PStudent createStudent(unsigned int, unsigned short,const char*);
+void printStudent(Student* pStud);
 
 int main()
 {
