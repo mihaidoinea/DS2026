@@ -1,0 +1,5 @@
+13000, 1069, Popescu Maria
+14500, 1068, Ionescu George
+3400, 1070, Anghel Ioana
+23000, 1081, Popa Marius
+12450, 1068, Turcu Robert
