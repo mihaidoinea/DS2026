@@ -1,0 +1,6 @@
+13000,Popescu Maria, 1055
+2300,Ionescu Ioan, 1055
+12340,Anghel Laura, 1068
+11300,Andrei Marius, 1067
+1890,Ion Catalin, 1068
+1400,Ovidiu Lazar, 1078
