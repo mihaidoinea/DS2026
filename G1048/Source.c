@@ -14,7 +14,8 @@ typedef struct Student
 #define LINE_SIZE 256
 
 PStudent createStudent(unsigned int, unsigned short,const char*);
-void printStudent(Student* pStud);
+void printStudent(Student*);
+void deleteStudent(Student*);
 
 int main()
 {
@@ -43,11 +44,25 @@ int main()
 			token = strtok_s(NULL, delimiter, &context);
 			//printf("Remaining line: %s\n", context);
 			Student* pStud = createStudent(regNo, groupNo, token);
+			
+			
+
 			printStudent(pStud);
+			deleteStudent(pStud);
 		}
 	}
 	
 	return 0;
+}
+
+void deleteStudent(Student* pStud)
+{
+	if (pStud != NULL)
+	{
+		if(pStud->name)
+			free(pStud->name);
+		free(pStud);
+	}
 }
 
 void printStudent(Student* pStud)
