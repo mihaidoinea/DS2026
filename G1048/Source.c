@@ -19,6 +19,16 @@ void deleteStudent(Student*);
 
 int main()
 {
+	//Student masiv1[6]; //1. static array with elements of type Student
+	//Student* masiv2[6]; //2. static array with elements of type Student*
+	//Student* masiv3; //3. ptr to Student type OR dynamic array with elements of type Student
+	Student** masiv4 = NULL; //4a. ptr to ptr to Student
+					//4b. ptr to a dynamic array of elements of type Student
+					//4c. matrix of elements of type Student
+
+
+	int size = 0;
+
 	Student stud = {12000, 17, "Popescu Ioan"};
 	printf("sizeof(Student) = %d\n", sizeof(Student));
 	FILE* pFile = fopen("Data.txt", "r");
@@ -45,9 +55,27 @@ int main()
 			//printf("Remaining line: %s\n", context);
 			Student* pStud = createStudent(regNo, groupNo, token);
 			
-			
+			//1.
+			//masiv1[index++] = *pStud;
+			//masiv1[index].group = groupNo;
+			//masiv1[index].regNo = regNo;
 
-			printStudent(pStud);
+			//2.
+			//masiv2[index++] = pStud;
+
+			//4b.
+			Student** tmp = masiv4;
+			masiv4 = (Student**)malloc(sizeof(Student*) * (size + 1));
+			if (size > 0)
+			{
+				for (register int i = 0; i < size; i++)
+					masiv4[i] = tmp[i];
+			}
+			masiv4[size++] = pStud;
+
+			//insertIntoArray();
+
+			printStudent(masiv4[size-1]);
 			deleteStudent(pStud);
 		}
 	}
