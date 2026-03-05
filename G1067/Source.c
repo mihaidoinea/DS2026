@@ -8,6 +8,7 @@
 //typedef struct Student Student;
 #define LINE_BUFFER 256
 
+void insertIntoArray(Student***, Student*, int*);
 int main()
 {
 	Student* stud1 = NULL;
@@ -59,21 +60,26 @@ int main()
 			//(array + 1)[0] = *stud;
 
 		
-			//1. array allocation
-			Student** tmp = parray;
-			parray = (Student**)malloc(sizeof(Student*) * (++size));
-			if (size - 1 > 0)
-			{
-				//copy the old ones into the new location
-				for (register int i = 0; i < size - 1; i++)
-					parray[i] = tmp[i];
-				free(tmp);
-			}
-			//copy the new student
-			parray[size - 1] = stud;
-
+			insertIntoArray(&parray, stud, &size);
+			//parray = insertIntoArray(parray, stud, &size);
 			printStudent(parray[size - 1]);
 			deleteStudent(stud);
 		}
 	}
+}
+
+void insertIntoArray(Student*** parray, Student* stud, int* size)
+{
+	//1. array allocation
+	Student** tmp = *parray;
+	*parray = (Student**)malloc(sizeof(Student*) * (++(*size)));
+	if (*size - 1 > 0)
+	{
+		//copy the old ones into the new location
+		for (register int i = 0; i < (*size) - 1; i++)
+			(*parray)[i] = tmp[i];
+		free(tmp);
+	}
+	//copy the new student
+	(*parray)[(*size) - 1] = stud;
 }
