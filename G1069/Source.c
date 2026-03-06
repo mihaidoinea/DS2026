@@ -15,6 +15,7 @@ typedef struct Student
 void printStudent(PStudent);
 PStudent createStudent(unsigned int, unsigned short, const char*);
 void deleteStudent(Student*);
+void insertIntoArray(Student*** array, Student* stud, short* size);
 
 int main()
 {
@@ -23,16 +24,17 @@ int main()
 	Student array1[5];
 	//2a. one-dimensional dynamic array of elements of type Student
 	//2b. ptr to an element of type Student
-	Student* array2;
+	Student* array2 = NULL;
 	//3a. one-dimensional static array of elements of type Student*
 	//3b. one-dimensional static array of dynamic arrays of elements of type Student
 	Student* array3[5];
 	//4a. a ptr to another ptr to an element of type Student
 	//4b. a ptr to an array of elements of type ptr to a Student
 	//4c. bi-dimensional array of elements of type Student
-	Student** array4;
+	Student** array4 = NULL;
 
-
+	short index = 0;
+	
 	Student stud = { .regNo = 13000,.groupNo = 1069,.name = "Popescu Ioan" };
 	printf("sizeof(Student)=%d\n", sizeof(Student));
 
@@ -58,12 +60,38 @@ int main()
 			token = strtok_s(NULL, delimiter, &context);
 			Student* stud = createStudent(regNo, groupNo, token);
 
-			printStudent(stud);
+			//1.
+			array1[index] = *stud;
+			//3a.
+			array3[index] = stud;
+			
+			insertIntoArray(&array4, stud, &index);
+			
+			printStudent(array4[index-1]);
+			deleteStudent(stud);
+			//index++;
 		}
 	}
 	return 0;
 }
 
+void insertIntoArray(Student*** array, Student* stud, short* size)
+{
+	//4.
+	Student** tmp = *array;
+	*array = (Student**)malloc(sizeof(Student*) * ((*size) + 1));
+	if (*array != NULL)
+	{
+		if (*size > 0)
+		{
+			for (register short i = 0; i < *size; i++)
+				(*array)[i] = tmp[i];
+			free(tmp);
+		}
+		(*array)[*size] = stud;
+		(*size)++;
+	}
+}
 void printStudent(PStudent pStud)
 {
 	if (pStud != NULL)
