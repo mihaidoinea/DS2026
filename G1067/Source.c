@@ -11,26 +11,25 @@ typedef struct Student {
 //typedef struct Student Student;
 #define LINE_BUFFER 256
 
+//Singly-linked list definition
+typedef struct ListNode {
+	Student* data;
+	struct ListNode* next;
+}ListNode, *PListNode;
+
+void insertStudentToEndList(ListNode**, Student*);
+void printSinglyLinkedList(ListNode*);
+
 Student* createStudent(unsigned int, short int, const char*);
 void printStudent(Student*);
 void deleteStudent(Student*);
 
 int main()
 {
-	Student* stud1 = NULL;
-	PStudent stud2 = NULL;
-	printf("sizeof(Student)=%d\n", sizeof(Student));
+	ListNode* singlyLinkedList = NULL;
+
 	FILE* fp = fopen("Data.txt", "r");
-	Student array[6];
-
-	printf("sizeof(array)=%d\n", sizeof(array));
-	printf("array=%p\n", array);
-	printf("&array=%p\n", &array);
-
-	printf("array+1=%p\n", array+1);
-	printf("&array+1=%p\n", &array+1);
-
-
+	
 	if (fp != NULL)
 	{
 		char line[LINE_BUFFER];
@@ -51,15 +50,50 @@ int main()
 			token = strtok_s(NULL, delimiter, &context);
 
 			Student* stud = createStudent(regNo, groupNo, token);
-			array[1] = *stud;
-			*(array + 1) = *stud;
-			(array + 1)[0] = *stud;
 
-			printStudent(stud);
-			deleteStudent(stud);
+			insertStudentToEndList(&singlyLinkedList, stud);
+			printSinglyLinkedList(singlyLinkedList);
+			printf("\n------------------------\n");
 		}
 	}
 }
+
+ListNode* createNode(Student* stud)
+{
+	ListNode* node = (ListNode*)malloc(sizeof(ListNode));
+	if (node != NULL)
+	{
+		node->data = stud;
+		node->next = NULL;
+	}
+	return node;
+}
+void printSinglyLinkedList(ListNode* list)
+{
+	if (list != NULL)
+	{
+		while (list)
+		{
+			printStudent(list->data);
+			list = list->next;
+		}
+	}
+}
+
+void insertStudentToEndList(ListNode** list, Student* stud)
+{
+	ListNode* node = createNode(stud);
+	ListNode* tmp = *list;
+	if (tmp != NULL)
+	{
+		while (tmp->next != NULL)
+			tmp = tmp->next;
+		tmp->next = node;
+	}
+	else
+		*list = node;
+}
+
 void deleteStudent(Student* pStud)
 {
 	if (pStud != NULL)
