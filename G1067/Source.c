@@ -23,10 +23,30 @@ void printSinglyLinkedList(ListNode*);
 Student* createStudent(unsigned int, short int, const char*);
 void printStudent(Student*);
 void deleteStudent(Student*);
+ListNode* createNode(Student*);
+
+void insertStudentToArrayBasedList(ListNode** vector, Student* stud, short* size) {
+	ListNode* node = createNode(stud);
+	//insertion in the list at the begining
+	//element on size index is the head of the list
+	if (*size == 0)
+		vector[(*size)++] = node;
+	else
+	{
+		node->next = vector[(*size)-1];
+		//insertion in the array
+		vector[(*size)++] = node;
+	}
+	
+	
+}
 
 int main()
 {
 	ListNode* singlyLinkedList = NULL;
+
+	ListNode* vector[100];
+	memset(vector, 0, sizeof(vector));
 
 	FILE* fp = fopen("Data.txt", "r");
 	
@@ -39,6 +59,7 @@ int main()
 		short int groupNo;
 		char* token = NULL;
 		char* context = NULL;
+		short size = 0;
 		while (fgets(line, LINE_BUFFER, fp))
 		{
 			token = strtok_s(line, delimiter, &context);
@@ -51,11 +72,14 @@ int main()
 
 			Student* stud = createStudent(regNo, groupNo, token);
 
-			insertStudentToEndList(&singlyLinkedList, stud);
-			printSinglyLinkedList(singlyLinkedList);
+			//insertStudentToEndList(&singlyLinkedList, stud);
+			insertStudentToArrayBasedList(vector, stud,  &size);
+
+			printSinglyLinkedList(vector[size-1]);
 			printf("\n------------------------\n");
 		}
 	}
+	//deleteStudent(stud);
 }
 
 ListNode* createNode(Student* stud)
