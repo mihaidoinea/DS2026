@@ -17,10 +17,13 @@ typedef struct ListNode
 	struct ListNode* next;
 }ListNode, *PListNode;
 
+void printSinglyLinkedList(PListNode);
+PListNode createListNode(PStudent);
 PStudent createStudent(unsigned int, unsigned short, const char*);
-void insertStudentIntoSinglyLinkedList(ListNode*, Student*);
+void insertStudentIntoSinglyLinkedList(PListNode*, Student*);
 void deleteStudent(Student*);
 void printStudent(PStudent);
+void deleteSinglyLinkedList(PListNode*);
 
 #define LINE_SIZE 256
 int main()
@@ -43,23 +46,71 @@ int main()
 		{
 			token = strtok_s(line, delimiter, &context);
 			regNo = atoi(token);
-			printf("Remaining string: %s\n", context);
+			//printf("Remaining string: %s\n", context);
 
 			token = strtok_s(NULL, delimiter, &context);
 			groupNo = atoi(token);
-			printf("Remaining string: %s\n", context);
+			//printf("Remaining string: %s\n", context);
 
 			token = strtok_s(NULL, delimiter, &context);
 			Student* stud = createStudent(regNo, groupNo, token);
 
-			insertStudentIntoSinglyLinkedList(singlyLinkedList, stud);
+			insertStudentIntoSinglyLinkedList(&singlyLinkedList, stud);
+
+			printSinglyLinkedList(singlyLinkedList);
+
+			printf("\n-------------------------------------\n");
 		}
+
+		deleteSinglyLinkedList(&singlyLinkedList);
+		printSinglyLinkedList(singlyLinkedList);
+
 	}
 	return 0;
 }
-void insertStudentIntoSinglyLinkedList(ListNode* list, Student* stud)
+void deleteSinglyLinkedList(ListNode** headList)
 {
-
+	while (*headList) {
+		PListNode tmp = *headList;
+		*headList = (*headList)->next;
+		free(tmp->data->name);
+		free(tmp->data);
+		free(tmp);
+	}
+}
+PListNode createListNode(PStudent stud)
+{
+	ListNode* node = (ListNode*)malloc(sizeof(ListNode));
+	if (node != NULL)
+	{
+		node->data = stud;
+		node->next = NULL;
+	}
+	return node;
+}
+void printSinglyLinkedList(PListNode headList)
+{
+	while (headList)
+	{
+		printStudent(headList->data);
+		headList = headList->next;
+	}
+}
+void insertStudentIntoSinglyLinkedList(PListNode* headList, Student* stud)
+{
+	ListNode* node = createListNode(stud);
+	if (node != NULL)
+	{
+		if (*headList)
+		{
+			PListNode tmp = *headList;
+			while (tmp->next) //while(headList->next != NULL)
+				tmp = tmp->next;
+			tmp->next = node;
+		}
+		else
+			*headList = node;
+	}
 }
 
 void printStudent(PStudent pStud)
