@@ -26,11 +26,11 @@ int main()
 	{
 		char line[LINE_SIZE];
 		//char* delimiter = ",";
-		char delimiter[] = { ',','\0' };
+		char delimiter[] = { ',','\n','\0' };
 		char* token = NULL, * context = NULL;
 		unsigned int reg;
 		unsigned short group;
-		char* buffer[LINE_SIZE];
+		char buffer[LINE_SIZE];
 		while (fgets(line, LINE_SIZE, pFile))
 		{
 			token = strtok_s(line, delimiter, &context);
@@ -45,7 +45,6 @@ int main()
 			//printf("Remaining string: %s\n", context);
 
 			Student* stud = createStudent(reg, group, buffer);
-			printStudent(stud);
 
 		}
 	}
