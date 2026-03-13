@@ -26,6 +26,7 @@ void deleteStudent(Student*);
 
 void insertStudentIntoList(ListNode**, Student*);
 void printSinglyLinkedList(ListNode*);
+void insertStudentAfterKey(ListNode** list, Student* stud, const char* key);
 
 int main()
 {
@@ -63,6 +64,10 @@ int main()
 			printf("\n-------------------------------\n");
 
 		}
+
+		insertStudentAfterKey(&studentsList, &stud, "Popescu Ana");
+		printSinglyLinkedList(studentsList);
+
 	}	
 	return 0;
 }
@@ -78,6 +83,21 @@ ListNode* createNode(Student* stud)
 	}
 	return node;
 }
+void insertStudentAfterKey(ListNode** list, Student* stud, const char* key)
+{
+	ListNode* node = createNode(stud);
+	if (*list == NULL)
+		*list = node;
+	else
+	{
+		ListNode* tmp = *list;
+		while (tmp->next && strcmp(key, tmp->next->data->name) == 0)
+			tmp = tmp->next;
+		node->next = tmp->next;
+		tmp->next = node;
+	}
+}
+
 void printSinglyLinkedList(ListNode* list)
 {
 	while (list)
