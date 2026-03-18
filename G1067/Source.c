@@ -17,25 +17,13 @@ void deleteStudent(Student*);
 
 int main()
 {
-	Student* stud1 = NULL;
-	PStudent stud2 = NULL;
-	printf("sizeof(Student)=%d\n", sizeof(Student));
 	FILE* fp = fopen("Data.txt", "r");
-	Student array[6];
-
-	printf("sizeof(array)=%d\n", sizeof(array));
-	printf("array=%p\n", array);
-	printf("&array=%p\n", &array);
-
-	printf("array+1=%p\n", array+1);
-	printf("&array+1=%p\n", &array+1);
-
 
 	if (fp != NULL)
 	{
 		char line[LINE_BUFFER];
-		char* delimiter = ",";
-		//char delimiter[] = {',','\0'};
+		//char* delimiter = ",";
+		char delimiter[] = {',','\n','\0'};
 		unsigned int regNo;
 		short int groupNo;
 		char* token = NULL;
@@ -51,12 +39,7 @@ int main()
 			token = strtok_s(NULL, delimiter, &context);
 
 			Student* stud = createStudent(regNo, groupNo, token);
-			array[1] = *stud;
-			*(array + 1) = *stud;
-			(array + 1)[0] = *stud;
-
-			printStudent(stud);
-			deleteStudent(stud);
+	
 		}
 	}
 }
@@ -72,7 +55,7 @@ void deleteStudent(Student* pStud)
 void printStudent(Student* pStud)
 {
 	if(pStud != NULL)
-		printf("RegNo=%d, GroupNo=%d, Name=%s", 
+		printf("RegNo=%d, GroupNo=%d, Name=%s\n", 
 			pStud->regNo, 
 			pStud->groupNo, 
 			pStud->name);
