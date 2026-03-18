@@ -19,8 +19,6 @@ void deleteStudent(Student*);
 
 int main()
 {
-	Student stud = {12000, 17, "Popescu Ioan"};
-	printf("sizeof(Student) = %d\n", sizeof(Student));
 	FILE* pFile = fopen("Data.txt", "r");
 	if (pFile != NULL)
 	{
