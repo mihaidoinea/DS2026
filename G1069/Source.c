@@ -11,16 +11,18 @@ typedef struct Student
 //typedef struct Student Student;
 //typedef struct Student* PStudent;
 #define LINE_SIZE 256
+
+void printStudent(Student*);
+PStudent createStudent(unsigned int, unsigned short, const char*);
+void deleteStudent(Student*);
+
 int main()
 {
-	Student stud = { .regNo = 13000,.groupNo = 1069,.name = "Popescu Ioan" };
-	printf("sizeof(Student)=%d\n", sizeof(Student));
-
 	FILE* pFile = fopen("Data.txt", "r");
 	if (pFile != NULL)
 	{
-		char* delimiter = ",";
-		char delimiter[] = { ',','\0' };
+		//char* delimiter = ",";
+		char delimiter[] = { ',','\n','\0' };
 		char line[LINE_SIZE];
 		char* token = NULL, *context = NULL;
 		unsigned int regNo; 
@@ -29,15 +31,14 @@ int main()
 		{
 			token = strtok_s(line, delimiter, &context);
 			regNo = atoi(token);
-			printf("Remaining string: %s\n", context);
+			//printf("Remaining string: %s\n", context);
 
 			token = strtok_s(NULL, delimiter, &context);
 			groupNo = atoi(token);
-			printf("Remaining string: %s\n", context);
+			//printf("Remaining string: %s\n", context);
 
 			token = strtok_s(NULL, delimiter, &context);
 			Student* stud = createStudent(regNo, groupNo, token);
-
 		}
 	}
 	return 0;
@@ -75,4 +76,11 @@ void deleteStudent(Student* stud)
 		free(stud);
 	}
 }
-
+void printStudent(PStudent pStud)
+{
+	if (pStud != NULL)
+	{
+		printf("Student: %s, regNo: %d, groupNo: %d\n",
+			pStud->name, pStud->groupNo, pStud->regNo);
+	}
+}
