@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 //#pragma pack(1)
 
 typedef struct Student
@@ -8,17 +9,67 @@ typedef struct Student
 	unsigned int regNo;
 	unsigned short group;
 	char* name;
-} Student, *PStudent;
+} Student, * PStudent;
 //typedef struct Student Student;
 //typedef struct Student* PStudent;
-#define LINE_SIZE 256
+typedef struct StackNode
+{
+	Student* data;
+	struct StackNode* next;
+}Stack, StackNode;
 
-PStudent createStudent(unsigned int, unsigned short,const char*);
+#define LINE_SIZE 256
+PStudent createStudent(unsigned int, unsigned short, const char*);
 void printStudent(Student*);
 void deleteStudent(Student*);
 
+bool isEmpty(Stack* head) {
+	return head == NULL;
+}
+StackNode* createNode(Student* s) {
+	StackNode* s1 = (StackNode*)malloc(sizeof(StackNode));
+	s1->data = s;
+	s1->next = NULL;
+	return s1;
+}
+Stack* push(Stack* head, Student* s) {
+	StackNode* node = createNode(s);
+	if (!isEmpty(head)) {
+		node->next = head;
+	}
+	return node;
+}
+
+Student* pop(Stack** head) {
+	if (isEmpty(*head)) {
+		return NULL;
+	}
+	else {
+		Student* s = (*head)->data;
+		StackNode* tmp = *head;
+		*head = (*head)->next;
+		free(tmp);
+		return s;
+	}
+}
+Student* peek(Stack* head) {
+	if (isEmpty(head)) {
+		return NULL;
+	}
+	return head->data;
+}
+void delete(Stack** head) {
+	while (!isEmpty(*head)) {
+		Student* s = pop(head);
+		printStudent(s);
+		deleteStudent(s);
+	}
+}
+
 int main()
 {
+	Stack* head = NULL;
+
 	FILE* pFile = fopen("Data.txt", "r");
 	if (pFile != NULL)
 	{
@@ -42,10 +93,13 @@ int main()
 			token = strtok_s(NULL, delimiter, &context);
 			//printf("Remaining line: %s\n", context);
 			Student* pStud = createStudent(regNo, groupNo, token);
-			
+			head = push(head, pStud);
+			pStud = peek(head);
+			printStudent(pStud);
 		}
+		delete(&head);
 	}
-	
+
 	return 0;
 }
 
@@ -70,8 +124,8 @@ void printStudent(Student* pStud)
 	}
 }
 
-PStudent createStudent(unsigned int regNo, 
-	unsigned short groupNo, 
+PStudent createStudent(unsigned int regNo,
+	unsigned short groupNo,
 	const char* name)
 {
 	Student* stud = (Student*)malloc(sizeof(Student));
@@ -79,10 +133,10 @@ PStudent createStudent(unsigned int regNo,
 	{
 		stud->regNo = regNo;
 		stud->group = groupNo;
-		stud->name = (char*)malloc(strlen(name)+1);
+		stud->name = (char*)malloc(strlen(name) + 1);
 		if (stud->name != NULL)
 		{
-			strcpy_s(stud->name, strlen(name)+1, name);
+			strcpy_s(stud->name, strlen(name) + 1, name);
 		}
 		else
 		{
