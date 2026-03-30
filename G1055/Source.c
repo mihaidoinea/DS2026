@@ -7,7 +7,20 @@ typedef struct Student
 	unsigned int regNo;
 	unsigned short groupNo;
 	char* name;
-} Student, *PStudent;
+} Student, * PStudent;
+typedef struct QueueNode
+{
+	Student* info;
+	struct QueueNode* next;
+	//struct QueueNode* prev;
+}QueueNode, Queue;
+
+typedef struct DummyQueue
+{
+	QueueNode* head;
+	QueueNode* tail;
+}DummyQueue;
+
 //typedef struct Student Student;
 //typedef struct Student* PStudent;
 #define LINE_SIZE 256
@@ -15,11 +28,21 @@ typedef struct Student
 PStudent createStudent(unsigned int reg, unsigned short group, const char* name);
 void deleteStudent(Student* stud);
 void printStudent(Student* stud);
+//void put(Queue**, Student*);
+Queue* put(Queue*, Student*);
+Student* get(Queue**);
+Student* peek(Queue*);
+void deleteQueue(Queue**);
+//DummyQueue putDQueue(DummyQueue, Student*);
+void putDQueue(DummyQueue*, Student*);
+Student* getDQueue(DummyQueue*);
 
 int main()
 {
-	Student stud = {.regNo=12300, .groupNo=1055, .name="Popescu Ioan"};
-	printf("sizeof(Student)=%d\n", sizeof(Student));
+	//Student stud = {.regNo=12300, .groupNo=1055, .name="Popescu Ioan"};
+	//printf("sizeof(Student)=%d\n", sizeof(Student));
+	DummyQueue queue = { .head = NULL, .tail = NULL };
+	Queue* tailQueue = NULL;
 
 	FILE* pFile = fopen("Data.txt", "r");
 	if (pFile != NULL)
@@ -45,10 +68,101 @@ int main()
 			//printf("Remaining string: %s\n", context);
 
 			Student* stud = createStudent(reg, group, buffer);
-
+			tailQueue = put(tailQueue, stud);
+			//Student* pStud = get(&tailQueue);
+			//printStudent(pStud);
 		}
+		deleteQueue(&tailQueue);
 	}
 	return 0;
+}
+Student* getDQueue(DummyQueue* dQueue)
+{
+	Student* result = NULL;
+	if (dQueue->tail != NULL && dQueue->head != NULL)
+	{
+		result = dQueue->head->info;
+		QueueNode* tmp = dQueue->head;
+		dQueue->head = tmp->next;
+		if (dQueue->head == NULL)
+			dQueue->tail = NULL;
+		free(tmp);
+	}
+	return result;
+}
+QueueNode* createNode(Student* stud)
+{
+	QueueNode* node = (QueueNode*)malloc(sizeof(QueueNode));
+	if (node != NULL)
+	{
+		node->info = stud;
+		node->next = node;
+	}
+	return node;
+}
+void putDQueue(DummyQueue* dQueue, Student* stud)
+{
+	QueueNode* node = createNode(stud);
+	if (dQueue->head == NULL && dQueue->tail == NULL)
+	{
+		dQueue->head = dQueue->tail = node;
+	}
+	else
+	{
+		dQueue->tail->next = node;
+		dQueue->tail = node;
+	}
+}
+void deleteQueue(Queue** tailQueue)
+{
+	Student* stud = NULL;
+	while ((stud = get(tailQueue)) != NULL)
+	{
+		printStudent(stud);
+		deleteStudent(stud);
+	}
+}
+Student* peek(Queue* tailQueue)
+{
+	Student* result = NULL;
+	if (tailQueue != NULL)
+	{
+		result = tailQueue->next->info;
+	}
+	return result;
+}
+Student* get(Queue** tailQueue)
+{
+	Student* result = NULL;
+	if (*tailQueue != NULL)
+	{
+		result = (*tailQueue)->next->info;
+		QueueNode* tmp = (*tailQueue)->next;
+		(*tailQueue)->next = tmp->next;
+		if (tmp->next == tmp)
+			(*tailQueue) = NULL;
+		free(tmp);
+	}
+	return result;
+}
+Queue* put(Queue* tailQueue, Student* stud)
+{
+	QueueNode* newNode = createNode(stud);
+	if (newNode != NULL)
+	{
+		if (tailQueue == NULL)
+		{
+			newNode->next = newNode;
+		}
+		else
+		{
+			newNode->next = tailQueue->next;
+			tailQueue->next = newNode;
+		}
+		return newNode;
+	}
+	else
+		return tailQueue;
 }
 PStudent createStudent(unsigned int reg, unsigned short group, const char* name)
 {
