@@ -35,14 +35,15 @@ typedef struct HTable
 
 
 #define LINE_SIZE 256
-#define HT_INITIAL_SIZE 3
+#define HT_INITIAL_SIZE 4
 //#define HT_INITIAL_SIZE 7
 
 PStudent createStudent(unsigned int, unsigned short, const char*);
 void printStudent(Student*);
 void deleteStudent(Student*);
-
+HashTable putStudent(HashTable, Student*);
 HashFunction hashFunctions[] = { hash1, hash2, hash3 };
+void displayStudents(HashTable);
 
 int main()
 {
@@ -76,11 +77,37 @@ int main()
 
 		}
 		printf("\n----------------Hash Table Items--------------------\n");
-	
+		displayStudents(hashTable);
 	}
 
 	return 0;
 }
+
+void displayStudents(HashTable hashTable)
+{
+	for (int i = 0; i < hashTable.size; i++)
+	{
+		printf("Bucket %d:\n", i);
+		printStudent(hashTable.items[i]);
+	}
+}
+
+void resizeHT(HashTable* hTable)
+{
+	Student** aux = hTable->items;
+	hTable->size *= 3;
+	hTable->items = (Student**)malloc(sizeof(Student*) * hTable->size);
+	memset(hTable->items, 0, sizeof(Student*) * hTable->size);
+	for (int index = 0; index < hTable->size / 3; index++)
+	{
+		Student* stud = aux[index];
+		if (stud != NULL)
+		{
+			*hTable = putStudent(*hTable, stud);
+		}
+	}
+}
+
 HashTable putStudent(HashTable hashTable, Student* pStud)
 {
 	if (hashTable.items == NULL && hashTable.size == 0)
