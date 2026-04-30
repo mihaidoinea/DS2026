@@ -3,6 +3,21 @@
 #include <stdlib.h>
 //#pragma pack(1)
 
+typedef unsigned int (*HashFunction) (unsigned int, int);
+
+unsigned int hash1(unsigned int key, int size)
+{
+	return key % size;
+}
+unsigned int hash2(unsigned int key, int size)
+{
+	return (key / size + 1) % size;
+}
+unsigned int hash3(unsigned int key, int size)
+{
+	return (key * 13 + 1) % size;
+}
+
 typedef struct Student
 {
 	unsigned int regNo;
@@ -26,6 +41,8 @@ typedef struct HTable
 PStudent createStudent(unsigned int, unsigned short, const char*);
 void printStudent(Student*);
 void deleteStudent(Student*);
+
+HashFunction hashFunctions[] = { hash1, hash2, hash3 };
 
 int main()
 {
@@ -55,12 +72,52 @@ int main()
 			//printf("Remaining line: %s\n", context);
 			Student* pStud = createStudent(regNo, groupNo, token);
 		
+			hashTable = putStudent(hashTable, pStud);
+
 		}
 		printf("\n----------------Hash Table Items--------------------\n");
 	
 	}
 
 	return 0;
+}
+HashTable putStudent(HashTable hashTable, Student* pStud)
+{
+	if (hashTable.items == NULL && hashTable.size == 0)
+	{
+		//initial allocation
+		hashTable.items = (Student**)malloc(sizeof(Student*) * HT_INITIAL_SIZE);
+		hashTable.size = HT_INITIAL_SIZE;
+		memset(hashTable.items, 0, sizeof(Student*) * HT_INITIAL_SIZE);
+	}
+	/*int index = hash1(pStud->regNo, hashTable.size);
+	if(hashTable.items[index] == NULL)
+		hashTable.items[index] = pStud;
+	else if (hashTable.items[hash2(pStud->regNo, hashTable.size)] == NULL)
+	{
+		hashTable.items[hash2(pStud->regNo, hashTable.size)] = pStud;
+	}
+	else if (hashTable.items[hash3(pStud->regNo, hashTable.size)])
+	{
+		hashTable.items[hash3(pStud->regNo, hashTable.size)] = pStud;
+	}
+	else
+	{
+		resizeHT(&hashTable);
+	}*/
+	int noEl = sizeof(hashFunctions) / sizeof(HashFunction);
+	for (int i = 0; i < noEl; i++)
+	{
+		int index = hashFunctions[i](pStud->regNo, hashTable.size);
+		if (hashTable.items[index] == NULL)
+		{
+			hashTable.items[index] = pStud;
+			return hashTable;
+		}
+	}
+	resizeHT(&hashTable);
+	hashTable = putStudent(hashTable, pStud);
+	return hashTable;
 }
 
 void deleteStudent(Student* pStud)
