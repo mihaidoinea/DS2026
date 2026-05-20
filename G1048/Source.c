@@ -15,6 +15,7 @@ typedef struct BST {
 
 	struct BST* leftChild;
 	Student* data;
+	int bFactor;
 	struct BST* rightChild;
 }BinarySearchTree;
 
@@ -24,6 +25,7 @@ BinarySearchTree* createNode(Student* stud) {
 		node->data = stud;
 		node->leftChild = NULL;
 		node->rightChild = NULL;
+		node->bFactor = 0;
 	}
 	return node;
 }
@@ -38,6 +40,7 @@ BinarySearchTree* insertRoot(BinarySearchTree*, Student*);
 void inOrder(BinarySearchTree*);
 void deleteKey(BinarySearchTree**, unsigned int);
 int getHeight(BinarySearchTree*);
+void preOrder(BinarySearchTree*);
 
 int main()
 {
@@ -65,17 +68,57 @@ int main()
 			Student* stud = createStudent(regNo, groupNo, token);
 
 			root = insertRoot(root, stud);
+			preOrder(root);
+			printf("\n---------------------------\n");
 
 		}
-		inOrder(root);
-		deleteKey(&root, 13000);
-		printf("\n------------AFTER DELETION---------------\n");
-		inOrder(root);
+		
+		//deleteKey(&root, 13000);
+		//printf("\n------------AFTER DELETION---------------\n");
+		//inOrder(root);
 
 		int height = getHeight(root);
 
 		printf("Height= %d", height);
 	}
+}
+
+BinarySearchTree* LeftRotation(BinarySearchTree* pivot)
+{
+	BinarySearchTree* desc = pivot->rightChild;
+	pivot->rightChild = desc->leftChild;
+	desc->leftChild = pivot;
+	return desc;
+}
+
+BinarySearchTree* RightRotation(BinarySearchTree* pivot)
+{
+	BinarySearchTree* desc = pivot->leftChild;
+	pivot->leftChild = desc->rightChild;
+	desc->rightChild = pivot;
+	return desc;
+}
+
+void rebalance(BinarySearchTree** pivot)
+{
+	(*pivot)->bFactor = getHeight((*pivot)->leftChild) - getHeight((*pivot)->rightChild);
+	if ((*pivot)->bFactor == -2) {
+		BinarySearchTree* descendentRight = (*pivot)->rightChild;
+		if (descendentRight->bFactor == 1) {
+			(*pivot)->rightChild = RightRotation(descendentRight);
+		}
+		*pivot = LeftRotation(*pivot);
+	}
+	else {
+		if ((*pivot)->bFactor == 2) {
+			BinarySearchTree* descendentLeft = (*pivot)->leftChild;
+			if (descendentLeft->bFactor == -1) {
+				(*pivot)->leftChild = LeftRotation(descendentLeft);
+			}
+			*pivot = RightRotation(*pivot);
+		}
+	}
+
 }
 
 BinarySearchTree* findMin(BinarySearchTree* root) {
@@ -143,7 +186,16 @@ BinarySearchTree* insertRoot(BinarySearchTree* root, Student* stud) {
 		root->data = stud;
 		deleteStudent(tmp);
 	}
+	rebalance(&root);
 	return root;
+}
+
+void preOrder(BinarySearchTree* root) {
+	if (root) {
+		printStudent(root->data);
+		inOrder(root->leftChild);
+		inOrder(root->rightChild);
+	}
 }
 
 void inOrder(BinarySearchTree* root) {
