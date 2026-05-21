@@ -33,6 +33,8 @@ void deleteStudent(Student*);
 
 int main()
 {
+	Vertex* graph = NULL;
+	int noVertices = 0;
 	FILE* pFile = fopen("Data.txt", "r");
 	if (pFile != NULL)
 	{
