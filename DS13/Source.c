@@ -1,22 +1,16 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "GraphUtil.h"
 //#pragma pack(1)
 
-typedef struct Student
-{
-	unsigned int regNo;
-	unsigned short group;
-	char* name;
-} Student, * PStudent;
 #define LINE_SIZE 256
-
-PStudent createStudent(unsigned int, unsigned short, const char*);
-void printStudent(Student*);
-void deleteStudent(Student*);
 
 int main()
 {
+	Vertex* graph = NULL;
+	int noVertices = 0;
+
 	FILE* pFile = fopen("Data.txt", "r");
 	if (pFile != NULL)
 	{
@@ -40,11 +34,73 @@ int main()
 			token = strtok_s(NULL, delimiter, &context);
 			//printf("Remaining line: %s\n", context);
 			Student* pStud = createStudent(regNo, groupNo, token);
-
+			graph = addVertex(graph, pStud);
+			noVertices++;
 		}
+
+		addEdges(graph, 8700, 4500);
+		addEdges(graph, 8700, 17000);
+		addEdges(graph, 3000, 17000);
+		addEdges(graph, 3000, 15000);
+		addEdges(graph, 3000, 13000);
+		addEdges(graph, 4500, 15000);
+		addEdges(graph, 17000, 13000);
 	}
 
 	return 0;
+}
+Vertex* findVertex(Vertex* list, unsigned int key)
+{
+	while (list && list->info->regNo != key)
+	{
+		list = list->next;
+	}
+	return list;
+}
+Neighbour* insertNeighbour(Neighbour* neighbours, Vertex* vertex)
+{
+	Neighbour* node = (Neighbour*)malloc(sizeof(Neighbour));
+	if (node != NULL)
+	{
+		node->reference = vertex;
+		node->next = neighbours;
+	}
+	return node;
+}
+void addEdges(Vertex* listOfVertices,
+	unsigned int src, unsigned int dst)
+{
+	Vertex* srcVertex = findVertex(listOfVertices, src);;
+	Vertex* dstVertex = findVertex(listOfVertices, dst);;
+
+	if (srcVertex != NULL && dstVertex != NULL)
+	{
+		srcVertex->neighbours = insertNeighbour(srcVertex->neighbours, dstVertex);
+		dstVertex->neighbours = insertNeighbour(dstVertex->neighbours, srcVertex);
+	}
+}
+
+Vertex* createVertex(Student* stud)
+{
+	Vertex* node = (Vertex*)malloc(sizeof(Vertex));
+	if (node != NULL)
+	{
+		node->info = stud;
+		node->neighbours = NULL;
+		node->next = NULL;
+	}
+	return node;
+}
+
+Vertex* addVertex(Vertex* listOfVertices, Student* stud)
+{
+	Vertex* vertex = createVertex(stud);
+	if (vertex != NULL)
+	{
+		vertex->next = listOfVertices;
+		listOfVertices = vertex;
+	}
+	return listOfVertices;
 }
 
 void deleteStudent(Student* pStud)

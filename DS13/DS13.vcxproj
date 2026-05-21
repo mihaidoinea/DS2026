@@ -176,10 +176,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GraphUtil.c" />
     <ClCompile Include="Source.c" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Data.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GraphUtil.h" />
+    <ClInclude Include="StudentUtil.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
