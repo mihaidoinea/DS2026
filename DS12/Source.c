@@ -16,7 +16,23 @@ Node* createNode(int time) {
     return newNode;
 }
 
-//int insert(Node** root, int time)
+int insert(Node** root, int time, Node* pred, Node* succ)
+{
+    Node* current = *root;
+    if (current == NULL)
+    {
+        *root = createNode(time);
+        return 1;
+    }
+    else
+    {
+        if (current->time > time)
+            return insert(&(*root)->left, time, NULL, current);
+        else if (current->time < time)
+            return insert(&(*root)->right, time, current, NULL);
+
+    }
+}
 
 int insert(Node** root, int time) {
     Node* current = *root, * parent = NULL;
