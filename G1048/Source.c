@@ -9,6 +9,19 @@ typedef struct Student
 	unsigned short group;
 	char* name;
 } Student, *PStudent;
+
+typedef struct Neighbour
+{
+	struct Vertex* reference;
+	struct Neighbour* next;
+}Neighbour;
+typedef struct Vertex
+{
+	Student* info;
+	struct Vertex* next;
+	Neighbour* neighbours;
+}Vertex;
+
 //typedef struct Student Student;
 //typedef struct Student* PStudent;
 #define LINE_SIZE 256
@@ -16,9 +29,16 @@ typedef struct Student
 PStudent createStudent(unsigned int, unsigned short,const char*);
 void printStudent(Student*);
 void deleteStudent(Student*);
+Vertex* createVertex(Student*);
+Vertex* addVertex(Vertex*, Student*);
+void addEdges(Vertex*, unsigned int, unsigned int);
+void printListOfLists(Vertex*);
 
 int main()
 {
+	Vertex* graph = NULL;
+	int noVertices = 0;
+
 	FILE* pFile = fopen("Data.txt", "r");
 	if (pFile != NULL)
 	{
@@ -42,13 +62,97 @@ int main()
 			token = strtok_s(NULL, delimiter, &context);
 			//printf("Remaining line: %s\n", context);
 			Student* pStud = createStudent(regNo, groupNo, token);
-			
+			graph = addVertex(graph, pStud);
+			noVertices++;
 		}
+
+		addEdges(graph, 8700, 4500);
+		addEdges(graph, 8700, 17000);
+		addEdges(graph, 3000, 17000);
+		addEdges(graph, 3000, 15000);
+		addEdges(graph, 3000, 13000);
+		addEdges(graph, 4500, 15000);
+		addEdges(graph, 17000, 13000);
+
+		printListOfLists(graph);
 	}
+
+	//implement BF/DF using the adjacency list implementation
 	
 	return 0;
 }
 
+void printListOfLists(Vertex* graph)
+{
+	while (graph)
+	{
+		printStudent(graph->info);
+		printf("List of neighbours:\n");
+		Neighbour* iterator = graph->neighbours;
+		while (iterator)
+		{
+			printf("\t");
+			printStudent(iterator->reference->info);
+			iterator = iterator->next;
+		}
+		printf("\n");
+		graph = graph->next;
+	}
+}
+
+Vertex* findVertex(Vertex* list, unsigned int key)
+{
+	while (list && list->info->regNo != key)
+	{
+		list = list->next;
+	}
+	return list;
+}
+Neighbour* insertNeighbour(Neighbour* neighbours, Vertex* vertex)
+{
+	Neighbour* node = (Neighbour*)malloc(sizeof(Neighbour));
+	if (node != NULL)
+	{
+		node->reference = vertex;
+		node->next = neighbours;
+	}
+	return node;
+}
+void addEdges(Vertex* listOfVertices,
+	unsigned int src, unsigned int dst)
+{
+	Vertex* srcVertex = findVertex(listOfVertices, src);;
+	Vertex* dstVertex = findVertex(listOfVertices, dst);;
+
+	if (srcVertex != NULL && dstVertex != NULL)
+	{
+		srcVertex->neighbours = insertNeighbour(srcVertex->neighbours, dstVertex);
+		dstVertex->neighbours = insertNeighbour(dstVertex->neighbours, srcVertex);
+	}
+}
+
+Vertex* createVertex(Student* stud)
+{
+	Vertex* node = (Vertex*)malloc(sizeof(Vertex));
+	if (node != NULL)
+	{
+		node->info = stud;
+		node->neighbours = NULL;
+		node->next = NULL;
+	}
+	return node;
+}
+
+Vertex* addVertex(Vertex* listOfVertices, Student* stud)
+{
+	Vertex* vertex = createVertex(stud);
+	if (vertex != NULL)
+	{
+		vertex->next = listOfVertices;
+		listOfVertices = vertex;
+	}
+	return listOfVertices;
+}
 void deleteStudent(Student* pStud)
 {
 	if (pStud != NULL)
