@@ -8,22 +8,51 @@ typedef struct Student {
 	short int groupNo;
 	char* name; 
 } Student, *PStudent;
-//typedef struct Student Student;
-#define LINE_BUFFER 256
+
+typedef struct Neighbour
+{
+	struct Vertex* reference;
+	struct Neighbour* next;
+}Neighbour;
+
+typedef struct Vertex
+{
+	Student* info;
+	struct Vertex* next;
+	Neighbour* neighbours;
+}Vertex;
+
+typedef struct SAM
+{
+	Vertex** columns;
+	Vertex** lines;
+	int noEdges;
+}SparseAdjacencyMatrix;
 
 Student* createStudent(unsigned int, short int, const char*);
 void printStudent(Student*);
 void deleteStudent(Student*);
+Vertex* createVertex(Student*);
+Vertex* addVertex(Vertex*, Student*);
+void addEdges(Vertex*, unsigned int, unsigned int);
+void printListOfLists(Vertex*);
+void convertFromListOfListsToSMA(SparseAdjacencyMatrix*, Vertex*, int);
+void printSMA(SparseAdjacencyMatrix, int);
+
+#define LINE_BUFFER 256
 
 int main()
 {
+	Vertex* graph = NULL;
+	int noVertices = 0;
+
 	FILE* fp = fopen("Data.txt", "r");
 
 	if (fp != NULL)
 	{
 		char line[LINE_BUFFER];
 		//char* delimiter = ",";
-		char delimiter[] = {',','\n','\0'};
+		char delimiter[] = { ',','\n','\0' };
 		unsigned int regNo;
 		short int groupNo;
 		char* token = NULL;
@@ -32,16 +61,146 @@ int main()
 		{
 			token = strtok_s(line, delimiter, &context);
 			regNo = atoi(token);
-			
+
 			token = strtok_s(NULL, delimiter, &context);
 			groupNo = atoi(token);
 
 			token = strtok_s(NULL, delimiter, &context);
 
 			Student* stud = createStudent(regNo, groupNo, token);
-	
+
+			graph = addVertex(graph, stud);
+			noVertices++;
 		}
+
+		addEdges(graph, 8700, 4500);
+		addEdges(graph, 8700, 17000);
+		addEdges(graph, 3000, 17000);
+		addEdges(graph, 3000, 15000);
+		addEdges(graph, 3000, 13000);
+		addEdges(graph, 4500, 15000);
+		addEdges(graph, 17000, 13000);
+
+		printListOfLists(graph);
+
+		SparseAdjacencyMatrix sma = {.lines=NULL, .columns=NULL, .noEdges=0};
+
+		convertFromListOfListsToSMA(&sma, graph, 7);
+
+		printf("\n------------------------------\n");
+		printSMA(sma, 7);
+		//implement BF/DF using the adjacency list implementation
 	}
+	return 0;
+}
+void printSMA(SparseAdjacencyMatrix sma, int noEdges)
+{
+	int index = 0;
+	Vertex* aux = NULL, *prev = NULL;
+	while (index < noEdges * 2)
+	{
+		aux = sma.lines[index];
+		if (aux != prev) {
+			printf("\n");
+			printStudent(aux->info);
+			printf("has the following neighbours:\n");
+			prev = aux;
+		}
+		printStudent(sma.columns[index]->info);
+		index++;
+	}
+}
+
+void convertFromListOfListsToSMA(SparseAdjacencyMatrix* sma, Vertex* graph, int noEdges)
+{
+	int index = 0;
+	sma->lines = (Vertex**)malloc(sizeof(Vertex*) * noEdges*2);
+	sma->columns = (Vertex**)malloc(sizeof(Vertex*) * noEdges*2);
+	sma->noEdges = noEdges;
+	while (graph)
+	{
+		Neighbour* iterator = graph->neighbours;
+		while (iterator)
+		{
+			sma->lines[index] = graph;
+			sma->columns[index] = iterator->reference;
+			index++;
+			iterator = iterator->next;
+		}
+		graph = graph->next;
+	}
+}
+
+void printListOfLists(Vertex* graph)
+{
+	while (graph)
+	{
+		printStudent(graph->info);
+		printf("List of neighbours:\n");
+		Neighbour* iterator = graph->neighbours;
+		while (iterator)
+		{
+			printf("\t");
+			printStudent(iterator->reference->info);
+			iterator = iterator->next;
+		}
+		printf("\n");
+		graph = graph->next;
+	}
+}
+
+Vertex* findVertex(Vertex* list, unsigned int key)
+{
+	while (list && list->info->regNo != key)
+	{
+		list = list->next;
+	}
+	return list;
+}
+Neighbour* insertNeighbour(Neighbour* neighbours, Vertex* vertex)
+{
+	Neighbour* node = (Neighbour*)malloc(sizeof(Neighbour));
+	if (node != NULL)
+	{
+		node->reference = vertex;
+		node->next = neighbours;
+	}
+	return node;
+}
+void addEdges(Vertex* listOfVertices,
+	unsigned int src, unsigned int dst)
+{
+	Vertex* srcVertex = findVertex(listOfVertices, src);;
+	Vertex* dstVertex = findVertex(listOfVertices, dst);;
+
+	if (srcVertex != NULL && dstVertex != NULL)
+	{
+		srcVertex->neighbours = insertNeighbour(srcVertex->neighbours, dstVertex);
+		dstVertex->neighbours = insertNeighbour(dstVertex->neighbours, srcVertex);
+	}
+}
+
+Vertex* createVertex(Student* stud)
+{
+	Vertex* node = (Vertex*)malloc(sizeof(Vertex));
+	if (node != NULL)
+	{
+		node->info = stud;
+		node->neighbours = NULL;
+		node->next = NULL;
+	}
+	return node;
+}
+
+Vertex* addVertex(Vertex* listOfVertices, Student* stud)
+{
+	Vertex* vertex = createVertex(stud);
+	if (vertex != NULL)
+	{
+		vertex->next = listOfVertices;
+		listOfVertices = vertex;
+	}
+	return listOfVertices;
 }
 void deleteStudent(Student* pStud)
 {
@@ -54,15 +213,15 @@ void deleteStudent(Student* pStud)
 }
 void printStudent(Student* pStud)
 {
-	if(pStud != NULL)
-		printf("RegNo=%d, GroupNo=%d, Name=%s\n", 
-			pStud->regNo, 
-			pStud->groupNo, 
+	if (pStud != NULL)
+		printf("RegNo=%d, GroupNo=%d, Name=%s\n",
+			pStud->regNo,
+			pStud->groupNo,
 			pStud->name);
 }
 
-Student* createStudent(unsigned int regNo, 
-	short int groupNo, 
+Student* createStudent(unsigned int regNo,
+	short int groupNo,
 	const char* name)
 {
 	Student* pStud = (Student*)malloc(sizeof(Student));
