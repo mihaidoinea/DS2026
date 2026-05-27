@@ -87,6 +87,14 @@ int main()
 
 		convertFromListOfListsToSMA(&sma, graph, 7);
 
+		//1.1 Count how many students from a specific group are neighbours with a node send by name
+		int count = countByName(graph, 1060, "Popescu Maria");
+		//1.2 Delete a node given by regNo from the graph implemented with list of lists 
+		
+		//2.1 Count how many students from a specific group are neighbours with a node send by regNo
+		int count = countByName(sma, 1060, "Popescu Maria");
+		//2.2 Delete a node given by regNo from the graph implemented with sparse adjacency matrix 
+
 		printf("\n------------------------------\n");
 		printSMA(sma, 7);
 		//implement BF/DF using the adjacency list implementation
