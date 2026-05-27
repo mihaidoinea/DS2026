@@ -73,13 +73,16 @@ int main()
 
 		}
 		
-		//deleteKey(&root, 13000);
-		//printf("\n------------AFTER DELETION---------------\n");
-		//inOrder(root);
-
-		int height = getHeight(root);
-
-		printf("Height= %d", height);
+		//1.1 Change the registration number for a student sent by name as a parameter
+		root = changeKey(root, "Ionescu Mihai", 18900);
+		//1.2 Create the list with all the students in the tree
+		
+		//2.1 Count the number of students from a specific group are found in the structure
+		int count = countByGroup(root, 1048);
+		//2.2 Create the array with all the students in the tree
+		
+		//int height = getHeight(root);
+		//printf("Height= %d", height);
 	}
 }
 
