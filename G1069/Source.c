@@ -76,7 +76,7 @@ int main()
 		
 		//1.2 Return the list of connections for a given student "Popescu Ioan"
 
-		//2.1 Delete all neighbours from group N for a given student "Popescu Ioan"
+		//2.1 Delete all connections from group N for a given student "Popescu Ioan"
 		
 		//2.2 Return a list with all students from group 1070
 		
