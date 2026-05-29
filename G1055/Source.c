@@ -19,19 +19,17 @@ typedef struct BST
 	struct BST* right;
 }BinarySearchTree;
 
-PStudent createStudent(unsigned int reg, unsigned short group, const char* name);
-void deleteStudent(Student* stud);
-void printStudent(Student* stud);
+PStudent createStudent(unsigned int, unsigned short, const char*);
+void deleteStudent(Student*);
+void printStudent(Student*);
 BinarySearchTree* insert(BinarySearchTree*, Student*);
 void printTree(BinarySearchTree*);
 BinarySearchTree* deleteTree(BinarySearchTree*);
-void deleteByKey(BinarySearchTree** root, unsigned int regNo);
+void deleteByKey(BinarySearchTree**, unsigned int);
+
 int main()
 {
-	//Student stud = {.regNo=12300, .groupNo=1055, .name="Popescu Ioan"};
-	//printf("sizeof(Student)=%d\n", sizeof(Student));
 	BinarySearchTree* root = NULL;
-
 
 	FILE* pFile = fopen("Data.txt", "r");
 	if (pFile != NULL)
@@ -60,14 +58,26 @@ int main()
 			root = insert(root, stud);
 		}
 		printTree(root);
-		deleteByKey(&root, 12340);
+
+		//1.1 Calculati numarul de studenti cu regno mai mare decat o valoare transmisa ca parametru 
+		//1.2 Determinati nivelul nodului ce stocheaza studentul "Popescu Maria"
+
+		//2.1 Stergeti vecinul stang al unui student al carui nume este transmis ca parametru
+		//2.2 Determinati numarul de studenti de pe un anumit nivel din arbore
+
+		//deleteByKey(&root, 13000);
 		//root = deleteTree(root);
-		printf("\n---------------------------\n");
-		printTree(root);
+		//printf("\n---------------------------\n");
+		//printTree(root);
 	}
 	return 0;
 }
-
+BinarySearchTree* findMin(BinarySearchTree* root) {
+	while (root != NULL && root->left != NULL) {
+		root = root->right;
+	}
+	return root;
+}
 void deleteByKey(BinarySearchTree** root, unsigned int regNo)
 {
 	if ((*root) != NULL)
@@ -94,11 +104,14 @@ void deleteByKey(BinarySearchTree** root, unsigned int regNo)
 			}
 			else
 			{
-
+				//search for the min node in the right subtree
+				BinarySearchTree* minDesc = findMin((*root)->right);
+				Student* aux = (*root)->stud;
+				(*root)->stud = minDesc->stud;
+				minDesc->stud = aux;
+				deleteByKey(&(*root)->right, minDesc->stud->regNo);
 			}
-
 		}
-
 	}
 }
 
@@ -115,8 +128,8 @@ BinarySearchTree* deleteTree(BinarySearchTree* root) {
 
 void printTree(BinarySearchTree* root) {
 	if (root != NULL) {
-		printTree(root->left);
 		printStudent(root->stud);
+		printTree(root->left);
 		printTree(root->right);
 	}
 }
