@@ -72,7 +72,14 @@ int main()
 
 		printListOfLists(graph);
 
-		breadthFirst(graph);
+		//1.1 Delete a node from the graph for a given student "Popescu Ioan"
+		
+		//1.2 Return the list of connections for a given student "Popescu Ioan"
+
+		//2.1 Delete all neighbours from group N for a given student "Popescu Ioan"
+		
+		//2.2 Return a list with all students from group 1070
+		
 	}
 	return 0;
 }
